@@ -5,10 +5,10 @@ import imagesApi from "../services/imagesApi";
 import Searchbar from "./Searchbar/Searchbar";
 import ImageGallery from "./ImageGallery/ImageGallery";
 import Button from "./Button/Button";
+import Modal from "./Modal/Modal";
 
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import s from "./App.module.css";
-import Modal from "./Modal/Modal";
 
 export default class App extends Component {
   state = {
@@ -17,6 +17,8 @@ export default class App extends Component {
     error: null,
     searchQuery: "",
     page: 1,
+    showModal: false,
+    largeImage: null,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -24,6 +26,9 @@ export default class App extends Component {
     const nextQuery = this.state.searchQuery;
     if (prevQuery !== nextQuery) {
       this.fetchImages();
+    }
+    if (this.state.page > 2 && prevState.page !== this.state.page) {
+      this.smoothScrol();
     }
   }
 
@@ -43,27 +48,46 @@ export default class App extends Component {
   };
 
   handleSearchFormSubmit = (query) => {
-    this.setState({ searchQuery: query, page: 1, images: [] });
+    this.setState({
+      searchQuery: query,
+      page: 1,
+      images: [],
+      error: null,
+      showModal: false,
+    });
   };
 
-  onClick = (e) => {
-    const { images } = this.state;
-    if (e.target.nodeName !== "IMG") {
-      return;
-    }
-    images.map((image) => console.log(image.id));
+  handleClickImage = (largeImageURL) => {
+    this.openModal(largeImageURL);
+  };
+
+  openModal = (largeImageURL) =>
+    this.setState({ showModal: true, largeImage: largeImageURL });
+
+  closeModal = () => this.setState({ showModal: false, largeImage: "" });
+
+  smoothScrol = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
   };
 
   render() {
-    const { images, loading, error } = this.state;
+    const { images, loading, error, showModal, largeImage } = this.state;
     return (
       <div className={s.app}>
         <Searchbar onSubmit={this.handleSearchFormSubmit} />
         {error && <p>Whoops, something went wrong: {error.message}</p>}
 
         {images.length > 0 && (
-          <ImageGallery images={images} onClick={this.onClick} />
+          <ImageGallery images={images} onImageClick={this.handleClickImage} />
         )}
+
+        {showModal && (
+          <Modal largeImageURL={largeImage} closeModal={this.closeModal} />
+        )}
+
         {loading && (
           <div className={s.loader}>
             <Loader type="Oval" color="#00BFFF" height={30} width={30} />
