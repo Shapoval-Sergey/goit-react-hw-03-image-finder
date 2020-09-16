@@ -27,7 +27,7 @@
   overflow: hidden;
 }
 
-.searchForm-button {
+.searchFormButton {
   display: inline-block;
   width: 48px;
   height: 48px;
@@ -46,7 +46,7 @@
   opacity: 1;
 }
 
-.searchForm-button-label {
+.searchFormButtonLabel {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -58,7 +58,7 @@
   border: 0;
 }
 
-.searchForm-input {
+.searchFormInput {
   display: inline-block;
   width: 100%;
   font: inherit;
